@@ -23,9 +23,11 @@ dependencies {
 
     testImplementation("org.junit.platform:junit-platform-suite")
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
 
     testImplementation("com.tngtech.jgiven:jgiven-spring-junit5:1.2.5")
-    testImplementation("org.springframework.boot:spring-boot-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.test {
