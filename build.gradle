@@ -1,0 +1,33 @@
+plugins {
+    id("java")
+    id("org.springframework.boot") version "3.1.3"
+    id("com.tngtech.jgiven.gradle-plugin") version "1.2.5"
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = "dev.ecattez"
+version = "1.0-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    testImplementation("org.junit.platform:junit-platform-suite")
+    testImplementation("org.junit.jupiter:junit-jupiter")
+
+    testImplementation("com.tngtech.jgiven:jgiven-spring-junit5:1.2.5")
+    testImplementation("org.springframework.boot:spring-boot-test")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
