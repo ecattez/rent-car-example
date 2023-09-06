@@ -1,4 +1,4 @@
-package dev.ecattez.rentme.rent.model;
+package dev.ecattez.rentme.model;
 
 public record CarId(String value) {
 

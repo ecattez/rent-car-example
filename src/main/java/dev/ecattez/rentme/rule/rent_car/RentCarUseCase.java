@@ -1,8 +1,8 @@
-package dev.ecattez.rentme.rent.rule.rent_car;
+package dev.ecattez.rentme.rule.rent_car;
 
-import dev.ecattez.rentme.rent.model.CarRepository;
-import dev.ecattez.rentme.rent.RentEventBus;
-import dev.ecattez.rentme.rent.model.Car;
+import dev.ecattez.rentme.model.Car;
+import dev.ecattez.rentme.spi.CarRepository;
+import dev.ecattez.rentme.spi.RentEventBus;
 
 import java.time.Clock;
 

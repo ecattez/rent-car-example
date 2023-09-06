@@ -1,23 +1,21 @@
-package dev.ecattez.rentme.rent.features;
+package dev.ecattez.rentme.scenario;
 
+import com.tngtech.jgiven.integration.spring.EnableJGiven;
 import com.tngtech.jgiven.integration.spring.junit5.SimpleSpringScenarioTest;
-import dev.ecattez.rentme.rent.features.stage.RentCarStage;
-import org.junit.jupiter.api.Test;
+import dev.ecattez.rentme.scenario.stage.RentCarStage;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@EnableJGiven
 @SpringBootTest
-@Import(RentTestModule.class)
-class RentCarTest extends SimpleSpringScenarioTest<RentCarStage> {
+class RentCarScenarioTest extends SimpleSpringScenarioTest<RentCarStage> {
 
     @ParameterizedTest
     @MethodSource("rentExamples")
@@ -34,4 +32,21 @@ class RentCarTest extends SimpleSpringScenarioTest<RentCarStage> {
                 arguments(LocalDate.of(2023, 1, 31), LocalDate.of(2023, 2, 6))
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("alreadyRentExamples")
+    void car_already_rented_in_time_slots(LocalDate rentedUntil, LocalDate today) {
+        given().today_is(today)
+                .and().a_car_is_rented__until(rentedUntil)
+                .when().customer_rent_that_car()
+                .then().car_renting_is_aborted();
+    }
+
+    public static Stream<Arguments> alreadyRentExamples() {
+        return Stream.of(
+                arguments(LocalDate.of(2023, 1, 7), LocalDate.of(2023, 1, 5)),
+                arguments(LocalDate.of(2023, 2, 6), LocalDate.of(2023, 2, 6))
+        );
+    }
+
 }

@@ -1,8 +1,8 @@
-package dev.ecattez.rentme.rent.rule.rent_car;
+package dev.ecattez.rentme.rule.rent_car;
 
-import dev.ecattez.rentme.rent.model.CarId;
-import dev.ecattez.rentme.rent.model.CustomerId;
-import dev.ecattez.rentme.rent.model.RentEvent;
+import dev.ecattez.rentme.model.CarId;
+import dev.ecattez.rentme.model.CustomerId;
+import dev.ecattez.rentme.model.RentEvent;
 
 import java.time.LocalDate;
 
