@@ -21,7 +21,6 @@ public class RentTestModule {
     CarRepository carRepository;
     @MockBean
     RentEventBus rentEventBus;
-
     @Bean
     Clock clock() {
         return new ScenarioClock();

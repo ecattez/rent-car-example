@@ -5,6 +5,7 @@ import dev.ecattez.rentme.spi.CarRepository;
 import dev.ecattez.rentme.spi.RentEventBus;
 import dev.ecattez.rentme.spi.impl.InMemoryCarRepository;
 import dev.ecattez.rentme.spi.impl.SpringRentEventBus;
+import dev.ecattez.rentme.usecase.RentCarRoute;
 import dev.ecattez.rentme.usecase.RentCarUseCase;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -13,11 +14,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
 
 import java.time.Clock;
 
+import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+
 @Configuration
-class RentModule {
+public class RentModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(RentModule.class);
 
@@ -40,8 +46,18 @@ class RentModule {
     }
 
     @Bean
-    RentCarAPI rentCarUseCase(CarRepository carRepository, RentEventBus rentEventBus, Clock clock) {
+    RentCarAPI rentCarAPI(CarRepository carRepository, RentEventBus rentEventBus, Clock clock) {
         return new RentCarUseCase(carRepository, rentEventBus, clock);
+    }
+
+    @Configuration
+    static class RoutingModule {
+
+        @Bean
+        RouterFunction<ServerResponse> rentCarRoute(RentCarAPI rentCarAPI) {
+            return route(POST("/rent"), new RentCarRoute(rentCarAPI));
+        }
+
     }
 
     @PostConstruct
