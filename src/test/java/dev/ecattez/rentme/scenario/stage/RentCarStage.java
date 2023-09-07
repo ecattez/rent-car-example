@@ -3,19 +3,19 @@ package dev.ecattez.rentme.scenario.stage;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
-import dev.ecattez.rentme.model.CarId;
 import dev.ecattez.rentme.model.Car;
 import dev.ecattez.rentme.model.CarAlreadyRent;
+import dev.ecattez.rentme.model.CarId;
 import dev.ecattez.rentme.model.CustomerId;
 import dev.ecattez.rentme.model.Rent;
 import dev.ecattez.rentme.model.RentException;
-import dev.ecattez.rentme.rule.rent_car.CarRented;
-import dev.ecattez.rentme.rule.rent_car.RentCar;
-import dev.ecattez.rentme.rule.rent_car.RentCarUseCase;
 import dev.ecattez.rentme.scenario.context.ScenarioClock;
 import dev.ecattez.rentme.scenario.context.ScenarioContext;
 import dev.ecattez.rentme.spi.CarRepository;
 import dev.ecattez.rentme.spi.RentEventBus;
+import dev.ecattez.rentme.usecase.CarRented;
+import dev.ecattez.rentme.usecase.RentCar;
+import dev.ecattez.rentme.usecase.RentCarAPI;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -35,13 +35,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 public class RentCarStage extends Stage<RentCarStage> {
 
     @Autowired
-    private ScenarioClock clock;
-    @Autowired
     private CarRepository carRepository;
     @Autowired
     private RentEventBus rentEventBus;
     @Autowired
-    private RentCarUseCase rentCarUseCase;
+    private ScenarioClock clock;
+    @Autowired
+    private RentCarAPI rentCarAPI;
 
     @ScenarioState
     private final ScenarioContext context = new ScenarioContext();
@@ -87,7 +87,7 @@ public class RentCarStage extends Stage<RentCarStage> {
                 .requestedBy(context.customerId)
                 .build();
 
-        context.occurredError = catchThrowable(() -> rentCarUseCase.execute(command));
+        context.occurredError = catchThrowable(() -> rentCarAPI.accept(command));
 
         return self();
     }

@@ -1,6 +1,6 @@
 package dev.ecattez.rentme.model;
 
-import dev.ecattez.rentme.rule.rent_car.CarRented;
+import dev.ecattez.rentme.usecase.CarRented;
 
 import java.time.Clock;
 import java.time.LocalDate;

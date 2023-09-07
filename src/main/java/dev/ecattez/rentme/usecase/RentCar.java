@@ -1,4 +1,4 @@
-package dev.ecattez.rentme.rule.rent_car;
+package dev.ecattez.rentme.usecase;
 
 import dev.ecattez.rentme.model.CarId;
 import dev.ecattez.rentme.model.CustomerId;

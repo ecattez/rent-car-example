@@ -1,4 +1,4 @@
-package dev.ecattez.rentme.rule.rent_car;
+package dev.ecattez.rentme.usecase;
 
 import dev.ecattez.rentme.model.Car;
 import dev.ecattez.rentme.spi.CarRepository;
@@ -6,7 +6,7 @@ import dev.ecattez.rentme.spi.RentEventBus;
 
 import java.time.Clock;
 
-public class RentCarUseCase {
+public class RentCarUseCase implements RentCarAPI {
 
     private final CarRepository carRepository;
     private final RentEventBus eventBus;
@@ -18,7 +18,8 @@ public class RentCarUseCase {
         this.clock = clock;
     }
 
-    public void execute(RentCar command) {
+    @Override
+    public void accept(RentCar command) {
         Car car = carRepository.forId(command.carId());
         CarRented carRented = car.rent(command.requestedBy(), clock);
 

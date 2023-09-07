@@ -1,10 +1,11 @@
 package dev.ecattez.rentme;
 
+import dev.ecattez.rentme.usecase.RentCarAPI;
 import dev.ecattez.rentme.spi.CarRepository;
-import dev.ecattez.rentme.rule.rent_car.RentCarUseCase;
 import dev.ecattez.rentme.spi.RentEventBus;
 import dev.ecattez.rentme.spi.impl.InMemoryCarRepository;
 import dev.ecattez.rentme.spi.impl.SpringRentEventBus;
+import dev.ecattez.rentme.usecase.RentCarUseCase;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ class RentModule {
     }
 
     @Bean
-    RentCarUseCase rentCarUseCase(CarRepository carRepository, RentEventBus rentEventBus, Clock clock) {
+    RentCarAPI rentCarUseCase(CarRepository carRepository, RentEventBus rentEventBus, Clock clock) {
         return new RentCarUseCase(carRepository, rentEventBus, clock);
     }
 
