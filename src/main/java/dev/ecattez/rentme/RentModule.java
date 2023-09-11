@@ -1,15 +1,16 @@
 package dev.ecattez.rentme;
 
-import dev.ecattez.rentme.usecase.RentCarAPI;
 import dev.ecattez.rentme.spi.CarRepository;
 import dev.ecattez.rentme.spi.RentEventBus;
 import dev.ecattez.rentme.spi.impl.InMemoryCarRepository;
 import dev.ecattez.rentme.spi.impl.SpringRentEventBus;
+import dev.ecattez.rentme.usecase.RentCarAPI;
 import dev.ecattez.rentme.usecase.RentCarRoute;
 import dev.ecattez.rentme.usecase.RentCarUseCase;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ import java.time.Clock;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
-@Configuration
+@AutoConfiguration
 public class RentModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(RentModule.class);
