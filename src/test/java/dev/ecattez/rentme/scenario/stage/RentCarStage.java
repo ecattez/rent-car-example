@@ -3,6 +3,7 @@ package dev.ecattez.rentme.scenario.stage;
 import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
+import dev.ecattez.rentme.UseCase;
 import dev.ecattez.rentme.model.Car;
 import dev.ecattez.rentme.model.CarAlreadyRent;
 import dev.ecattez.rentme.model.CarId;
@@ -15,13 +16,13 @@ import dev.ecattez.rentme.spi.CarRepository;
 import dev.ecattez.rentme.spi.RentEventBus;
 import dev.ecattez.rentme.usecase.CarRented;
 import dev.ecattez.rentme.usecase.RentCar;
-import dev.ecattez.rentme.usecase.RentCarAPI;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -41,7 +42,7 @@ public class RentCarStage extends Stage<RentCarStage> {
     @Autowired
     private ScenarioClock clock;
     @Autowired
-    private RentCarAPI rentCarAPI;
+    private UseCase<RentCar> rentCarAPI;
 
     @ScenarioState
     private final ScenarioContext context = new ScenarioContext();
@@ -63,16 +64,16 @@ public class RentCarStage extends Stage<RentCarStage> {
     }
 
 
-    public RentCarStage a_car_is_rented__until(LocalDate rentedUntil) {
+    public RentCarStage a_car_is_rented_between_$_and_$(LocalDate rentedAt, LocalDate rentedUntil) {
         context.carId = CarId.of("0123456789");
 
         Rent rent = Rent.from(
                 CustomerId.of("anotherCustomer"),
-                LocalDate.MIN,
+                rentedAt,
                 rentedUntil);
 
         Mockito.when(carRepository.forId(context.carId))
-                .thenReturn(Car.from(context.carId, rent));
+                .thenReturn(Car.from(context.carId, List.of(rent)));
 
         return self();
     }
@@ -111,7 +112,7 @@ public class RentCarStage extends Stage<RentCarStage> {
         inOrder.verify(rentEventBus).publish(expectedEvent);
 
         Car actualCar = carCaptor.getValue();
-        assertThat(actualCar.rented()).isTrue();
+        assertThat(actualCar.rents()).contains(Rent.from(context.customerId, rentedAt, rentedUntil));
 
         return self();
     }

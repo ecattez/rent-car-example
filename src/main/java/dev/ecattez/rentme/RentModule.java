@@ -4,9 +4,8 @@ import dev.ecattez.rentme.spi.CarRepository;
 import dev.ecattez.rentme.spi.RentEventBus;
 import dev.ecattez.rentme.spi.impl.InMemoryCarRepository;
 import dev.ecattez.rentme.spi.impl.SpringRentEventBus;
-import dev.ecattez.rentme.usecase.RentCarAPI;
 import dev.ecattez.rentme.usecase.RentCarRoute;
-import dev.ecattez.rentme.usecase.RentCarUseCase;
+import dev.ecattez.rentme.usecase.RentCarAPI;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,7 @@ public class RentModule {
 
     @Bean
     RentCarAPI rentCarAPI(CarRepository carRepository, RentEventBus rentEventBus, Clock clock) {
-        return new RentCarUseCase(carRepository, rentEventBus, clock);
+        return new RentCarAPI(carRepository, rentEventBus, clock);
     }
 
     @Configuration

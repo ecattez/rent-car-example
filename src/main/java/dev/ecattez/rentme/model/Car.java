@@ -4,39 +4,46 @@ import dev.ecattez.rentme.usecase.CarRented;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class Car {
 
     private final CarId carId;
-    private Rent rent;
+    private final Collection<Rent> rents;
 
-    private Car(CarId carId) {
+    private Car(CarId carId, Collection<Rent> rents) {
         this.carId = carId;
+        this.rents = new ArrayList<>(rents);
     }
 
-    private Car(CarId carId, Rent rent) {
-        this.carId = carId;
-        this.rent = rent;
+    private Car(CarId carId) {
+        this(carId, List.of());
     }
 
     public CarId id() {
         return carId;
     }
 
-    public boolean rented() {
-        return Objects.nonNull(rent);
+    public Collection<Rent> rents() {
+        return List.copyOf(rents);
+    }
+
+    private boolean alreadyRentedAt(LocalDate today) {
+        return rents.stream().anyMatch(rent -> rent.contains(today));
     }
 
     public CarRented rent(CustomerId requestedBy, Clock clock) {
         LocalDate today = LocalDate.now(clock);
 
-        if (Objects.nonNull(rent) && rent.endsAfterOr(today)) {
+        if (alreadyRentedAt(today)) {
             throw new CarAlreadyRent(carId);
         }
 
         LocalDate rentedUntil = today.plusDays(6);
-        rent = Rent.from(requestedBy, today, rentedUntil);
+        Rent rent = Rent.from(requestedBy, today, rentedUntil);
+        rents.add(rent);
 
         return CarRented.builder()
                 .carId(carId)
@@ -50,15 +57,15 @@ public class Car {
         return new Car(carId);
     }
 
-    public static Car from(CarId carId, Rent rent) {
-        return new Car(carId, rent);
+    public static Car from(CarId carId, Collection<Rent> rents) {
+        return new Car(carId, rents);
     }
 
     @Override
     public String toString() {
         return "Car{" +
                 "carId=" + carId +
-                ", rent=" + rent +
+                ", rents=" + rents +
                 '}';
     }
 }

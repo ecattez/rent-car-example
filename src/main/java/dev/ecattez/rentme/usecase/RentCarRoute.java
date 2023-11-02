@@ -1,5 +1,6 @@
 package dev.ecattez.rentme.usecase;
 
+import dev.ecattez.rentme.UseCase;
 import dev.ecattez.rentme.model.CarId;
 import dev.ecattez.rentme.model.CustomerId;
 import org.springframework.web.reactive.function.server.HandlerFunction;
@@ -9,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 public class RentCarRoute implements HandlerFunction<ServerResponse> {
 
-    private final RentCarAPI rentCarAPI;
+    private final UseCase<RentCar> rentCarAPI;
 
     public RentCarRoute(RentCarAPI rentCarAPI) {
         this.rentCarAPI = rentCarAPI;

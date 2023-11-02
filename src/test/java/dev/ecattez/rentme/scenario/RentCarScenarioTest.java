@@ -35,17 +35,19 @@ class RentCarScenarioTest extends SimpleSpringScenarioTest<RentCarStage> {
 
     @ParameterizedTest
     @MethodSource("alreadyRentExamples")
-    void car_already_rented_in_time_slots(LocalDate rentedUntil, LocalDate today) {
+    void car_already_rented_in_time_slots(LocalDate rentedAt, LocalDate rentedUntil, LocalDate today) {
         given().today_is(today)
-                .and().a_car_is_rented__until(rentedUntil)
+                .and().a_car_is_rented_between_$_and_$(rentedAt, rentedUntil)
                 .when().customer_rent_that_car()
                 .then().car_renting_is_aborted();
     }
 
     public static Stream<Arguments> alreadyRentExamples() {
         return Stream.of(
-                arguments(LocalDate.of(2023, 1, 7), LocalDate.of(2023, 1, 5)),
-                arguments(LocalDate.of(2023, 2, 6), LocalDate.of(2023, 2, 6))
+                arguments(LocalDate.of(2023, 1, 4), LocalDate.of(2023, 1, 7), LocalDate.of(2023, 1, 5)),
+                arguments(LocalDate.of(2023, 1, 5), LocalDate.of(2023, 1, 7), LocalDate.of(2023, 1, 5)),
+                arguments(LocalDate.of(2023, 1, 4), LocalDate.of(2023, 2, 7), LocalDate.of(2023, 2, 7)),
+                arguments(LocalDate.of(2023, 1, 7), LocalDate.of(2023, 2, 7), LocalDate.of(2023, 2, 7))
         );
     }
 
