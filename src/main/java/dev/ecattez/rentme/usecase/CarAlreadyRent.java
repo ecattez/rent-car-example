@@ -1,4 +1,7 @@
-package dev.ecattez.rentme.model;
+package dev.ecattez.rentme.usecase;
+
+import dev.ecattez.rentme.model.CarId;
+import dev.ecattez.rentme.model.RentException;
 
 public class CarAlreadyRent extends RentException {
 

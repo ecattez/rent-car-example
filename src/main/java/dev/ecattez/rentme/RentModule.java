@@ -1,11 +1,11 @@
 package dev.ecattez.rentme;
 
-import dev.ecattez.rentme.spi.CarRepository;
 import dev.ecattez.rentme.spi.RentEventBus;
-import dev.ecattez.rentme.spi.impl.InMemoryCarRepository;
+import dev.ecattez.rentme.spi.RentRepository;
+import dev.ecattez.rentme.spi.impl.FakeRentRepository;
 import dev.ecattez.rentme.spi.impl.SpringRentEventBus;
-import dev.ecattez.rentme.usecase.RentCarRoute;
 import dev.ecattez.rentme.usecase.RentCarAPI;
+import dev.ecattez.rentme.usecase.RentCarRoute;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +28,9 @@ public class RentModule {
     private static final Logger LOG = LoggerFactory.getLogger(RentModule.class);
 
     @Bean
-    @ConditionalOnMissingBean(CarRepository.class)
-    CarRepository carRepository() {
-        return new InMemoryCarRepository();
+    @ConditionalOnMissingBean(RentRepository.class)
+    RentRepository carRepository() {
+        return new FakeRentRepository();
     }
 
     @Bean
@@ -46,8 +46,8 @@ public class RentModule {
     }
 
     @Bean
-    RentCarAPI rentCarAPI(CarRepository carRepository, RentEventBus rentEventBus, Clock clock) {
-        return new RentCarAPI(carRepository, rentEventBus, clock);
+    RentCarAPI rentCarAPI(RentRepository rentRepository, RentEventBus rentEventBus, Clock clock) {
+        return new RentCarAPI(rentRepository, rentEventBus, clock);
     }
 
     @Configuration

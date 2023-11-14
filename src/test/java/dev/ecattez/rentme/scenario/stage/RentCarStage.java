@@ -4,39 +4,31 @@ import com.tngtech.jgiven.Stage;
 import com.tngtech.jgiven.annotation.ScenarioState;
 import com.tngtech.jgiven.integration.spring.JGivenStage;
 import dev.ecattez.rentme.UseCase;
-import dev.ecattez.rentme.model.Car;
-import dev.ecattez.rentme.model.CarAlreadyRent;
-import dev.ecattez.rentme.model.CarId;
-import dev.ecattez.rentme.model.CustomerId;
-import dev.ecattez.rentme.model.Rent;
-import dev.ecattez.rentme.model.RentException;
+import dev.ecattez.rentme.model.*;
 import dev.ecattez.rentme.scenario.context.ScenarioClock;
 import dev.ecattez.rentme.scenario.context.ScenarioContext;
-import dev.ecattez.rentme.spi.CarRepository;
 import dev.ecattez.rentme.spi.RentEventBus;
+import dev.ecattez.rentme.spi.impl.FakeRentRepository;
+import dev.ecattez.rentme.usecase.CarAlreadyRent;
 import dev.ecattez.rentme.usecase.CarRented;
+import dev.ecattez.rentme.model.Rent;
 import dev.ecattez.rentme.usecase.RentCar;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.*;
 
 @JGivenStage
 public class RentCarStage extends Stage<RentCarStage> {
 
     @Autowired
-    private CarRepository carRepository;
+    private FakeRentRepository rentRepository;
     @Autowired
     private RentEventBus rentEventBus;
     @Autowired
@@ -57,8 +49,7 @@ public class RentCarStage extends Stage<RentCarStage> {
     public RentCarStage a_car_not_rented_yet() {
         context.carId = CarId.of("0123456789");
 
-        Mockito.when(carRepository.forId(context.carId))
-                .thenReturn(Car.from(context.carId));
+        rentRepository.clear();
 
         return self();
     }
@@ -67,13 +58,14 @@ public class RentCarStage extends Stage<RentCarStage> {
     public RentCarStage a_car_is_rented_between_$_and_$(LocalDate rentedAt, LocalDate rentedUntil) {
         context.carId = CarId.of("0123456789");
 
-        Rent rent = Rent.from(
-                CustomerId.of("anotherCustomer"),
-                rentedAt,
-                rentedUntil);
+        Rent rent = Rent.builder()
+                .carId(context.carId)
+                .by(CustomerId.of("anotherCustomer"))
+                .at(rentedAt)
+                .until(rentedUntil)
+                .build();
 
-        Mockito.when(carRepository.forId(context.carId))
-                .thenReturn(Car.from(context.carId, List.of(rent)));
+        rentRepository.initWith(rent);
 
         return self();
     }
@@ -105,14 +97,21 @@ public class RentCarStage extends Stage<RentCarStage> {
                 .rentedUntil(rentedUntil)
                 .build();
 
-        ArgumentCaptor<Car> carCaptor = ArgumentCaptor.forClass(Car.class);
+        ArgumentCaptor<Rent> rentCaptor = ArgumentCaptor.forClass(Rent.class);
 
-        InOrder inOrder = inOrder(carRepository, rentEventBus);
-        inOrder.verify(carRepository).save(carCaptor.capture());
+        InOrder inOrder = inOrder(rentRepository, rentEventBus);
+        inOrder.verify(rentRepository).save(rentCaptor.capture());
         inOrder.verify(rentEventBus).publish(expectedEvent);
 
-        Car actualCar = carCaptor.getValue();
-        assertThat(actualCar.rents()).contains(Rent.from(context.customerId, rentedAt, rentedUntil));
+        Rent expectedRent = Rent.builder()
+                .carId(context.carId)
+                .by(context.customerId)
+                .at(rentedAt)
+                .until(rentedUntil)
+                .build();
+
+        Rent actualRent = rentCaptor.getValue();
+        assertThat(actualRent).isEqualTo(expectedRent);
 
         return self();
     }
@@ -123,7 +122,7 @@ public class RentCarStage extends Stage<RentCarStage> {
                 .isInstanceOf(CarAlreadyRent.class)
                 .hasMessage("Car '0123456789' is already rent at this date");
 
-        verify(carRepository, never()).save(any());
+        verify(rentRepository, never()).save(any());
         verifyNoInteractions(rentEventBus);
 
         return self();
