@@ -1,6 +1,7 @@
 package dev.ecattez.rentme.spi.impl;
 
 import dev.ecattez.rentme.model.RentEvent;
+import dev.ecattez.rentme.model.RentId;
 import dev.ecattez.rentme.spi.RentEventBus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.context.event.EventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.ecattez.rentme.fixtures.RentFixtures.RENT_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {SpringRentEventBus.class, SpringRentEventBusTest.EventSink.class})
@@ -34,7 +36,12 @@ class SpringRentEventBusTest {
         assertThat(eventSink.occurredEvents).containsExactly(event);
     }
 
-    record FakeRentEvent() implements RentEvent {}
+    record FakeRentEvent() implements RentEvent {
+        @Override
+        public RentId rentId() {
+            return RENT_ID;
+        }
+    }
 
     static final class EventSink {
 

@@ -2,7 +2,7 @@ package dev.ecattez.rentme.model;
 
 import java.time.LocalDate;
 
-public record Rent(CarId carId, CustomerId by, LocalDate at, LocalDate until) {
+public record Rent(RentId id, CarId carId, CustomerId by, LocalDate at, LocalDate until) {
 
     public boolean contains(LocalDate today) {
         return (at.isBefore(today) || at.isEqual(today)) && (until.isAfter(today) || until.isEqual(today));
@@ -13,11 +13,17 @@ public record Rent(CarId carId, CustomerId by, LocalDate at, LocalDate until) {
     }
 
     public static final class Builder {
+        private RentId id;
 
         private CarId carId;
         private CustomerId by;
         private LocalDate at;
         private LocalDate until;
+
+        public Builder id(RentId id) {
+            this.id = id;
+            return this;
+        }
 
         public Builder carId(CarId carId) {
             this.carId = carId;
@@ -40,7 +46,7 @@ public record Rent(CarId carId, CustomerId by, LocalDate at, LocalDate until) {
         }
 
         public Rent build() {
-            return new Rent(carId, by, at, until);
+            return new Rent(id, carId, by, at, until);
         }
 
     }

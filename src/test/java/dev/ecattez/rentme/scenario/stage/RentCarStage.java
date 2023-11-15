@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 
+import static dev.ecattez.rentme.fixtures.RentFixtures.RENT_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -91,6 +92,7 @@ public class RentCarStage extends Stage<RentCarStage> {
         assertThat(context.occurredError).isNull();
 
         CarRented expectedEvent = CarRented.builder()
+                .rentId(RENT_ID)
                 .carId(context.carId)
                 .rentedBy(context.customerId)
                 .rentedAt(rentedAt)
@@ -104,6 +106,7 @@ public class RentCarStage extends Stage<RentCarStage> {
         inOrder.verify(rentEventBus).publish(expectedEvent);
 
         Rent expectedRent = Rent.builder()
+                .id(RENT_ID)
                 .carId(context.carId)
                 .by(context.customerId)
                 .at(rentedAt)

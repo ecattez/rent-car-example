@@ -1,8 +1,10 @@
 package dev.ecattez.rentme.scenario.config;
 
+import dev.ecattez.rentme.model.RentId;
 import dev.ecattez.rentme.scenario.context.ScenarioClock;
 import dev.ecattez.rentme.spi.RentEventBus;
 import dev.ecattez.rentme.spi.RentRepository;
+import dev.ecattez.rentme.usecase.RentIdGenerator;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Clock;
 
+import static dev.ecattez.rentme.fixtures.RentFixtures.RENT_ID;
+
 @Configuration
 public class RentTestModule {
 
@@ -22,6 +26,11 @@ public class RentTestModule {
     RentEventBus rentEventBus;
     @SpyBean
     RentRepository rentRepository;
+
+    @Bean
+    RentIdGenerator rentIdGenerator() {
+        return () -> RENT_ID;
+    }
 
     @Bean
     Clock clock() {

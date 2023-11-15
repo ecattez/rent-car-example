@@ -12,11 +12,13 @@ import java.time.LocalDate;
 
 public class RentCarAPI implements UseCase<RentCar> {
 
+    private final RentIdGenerator rentIdGenerator;
     private final RentRepository rentRepository;
     private final RentEventBus eventBus;
     private final Clock clock;
 
-    public RentCarAPI(RentRepository rentRepository, RentEventBus eventBus, Clock clock) {
+    public RentCarAPI(RentIdGenerator rentIdGenerator, RentRepository rentRepository, RentEventBus eventBus, Clock clock) {
+        this.rentIdGenerator = rentIdGenerator;
         this.rentRepository = rentRepository;
         this.eventBus = eventBus;
         this.clock = clock;
@@ -35,6 +37,7 @@ public class RentCarAPI implements UseCase<RentCar> {
         Rent rent = rentCar(today, carId, requestedBy);
 
         eventBus.publish(CarRented.builder()
+                .rentId(rent.id())
                 .carId(carId)
                 .rentedBy(rent.by())
                 .rentedAt(rent.at())
@@ -46,6 +49,7 @@ public class RentCarAPI implements UseCase<RentCar> {
         LocalDate rentedUntil = today.plusDays(6);
 
         Rent rent = Rent.builder()
+                .id(rentIdGenerator.generate())
                 .carId(carId)
                 .by(requestedBy)
                 .at(today)
